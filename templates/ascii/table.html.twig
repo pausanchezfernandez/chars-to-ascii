@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+{% block body %}
+    <table border="1" width="80px">
+    {% for item in characterToAscii %}
+
+        <tr>
+            <th>{{ item.character}}</th>
+            <th>{{ item.ascii}}</th>
+
+        </tr>
+
+    {% endfor %}
+    </table>
+{% endblock %}

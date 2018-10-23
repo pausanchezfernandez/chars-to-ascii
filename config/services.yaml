@@ -1,0 +1,75 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'en'
+    csv_file: '/file/words.csv'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    Ascii\:
+        resource: '../src/Ascii/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    Ascii\Controller\:
+        resource: '../src/Ascii/Controller'
+        tags: ['controller.service_arguments']
+
+    ascii.controller.list:
+        class: Ascii\Controller\ListWordsController
+        public: true
+        arguments:
+            - "@ascii.app.query.findcommandhandler"
+            - "@ascii.domain.service.parser.asciiparser"
+        tags: ['controller.service_arguments']
+
+    ascii.app.query.findcommandhandler:
+        class: Ascii\Application\Query\FindAll\FindAllWordsCommandHandler
+        public: true
+        arguments:
+            - "@ascii.app.query.findservice"
+
+    ascii.app.query.findservice:
+        class: Ascii\Application\Query\FindAll\FindAllWordsService
+        public: true
+        arguments:
+            - "@ascii.infra.csv.csvrepo"
+
+    ascii.infra.csv.csvrepo:
+        class: Ascii\Infrastructure\CSV\InCsvWordsRepository
+        public: true
+
+    ascii.domain.service.parser.asciiparser:
+        class: Ascii\Domain\Service\Parser\AsciiParser
+        public: true
+
+    ascii.controller.manager:
+        class: Ascii\Controller\ManagerController
+        public: true
+        arguments:
+            - "@ascii.domain.add.addwordcommandhandler"
+
+    ascii.domain.add.addwordcommandhandler:
+        class: Ascii\Application\Command\Add\AddWordCommandHandler
+        public: true
+        arguments:
+            - "@ascii.domain.add.addwordservice"
+
+    ascii.domain.add.addwordservice:
+        class: Ascii\Application\Command\Add\AddWordService
+        public: true
+        arguments:
+            - "@ascii.infra.csv.csvrepo"

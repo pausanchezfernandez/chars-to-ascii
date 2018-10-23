@@ -1,0 +1,24 @@
+manager_ascii:
+    path: /ascii/manager
+    controller: Ascii\Controller\ManagerController::addWord
+
+find_ascii:
+    path: /ascii/list
+    controller: Ascii\Controller\ListWordsController::list
+    methods: [GET]
+
+main_ascii:
+    path: /
+    controller: Ascii\Controller\ListWordsController::list
+    methods: [GET]
+
+api_ascii:
+    path: /ascii/{word}
+    controller: Ascii\Controller\CharacterToAsciiController::show
+    methods: [GET]
+
+add_ascii:
+    path: /ascii/remember/{word}
+    controller: Ascii\Controller\RememberWordController::addWord
+    methods: [GET]
+

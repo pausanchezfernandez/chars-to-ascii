@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+{% block body %}
+    <table border="1" width="100%">
+
+    {% for item in words %}
+
+        <tr>
+            <th>{{ item.id}}</th>
+            <th>{{ item.date}}</th>
+            <th>{{ item.word}}</th>
+            <th>{{ item.sum}}</th>
+
+        </tr>
+
+    {% endfor %}
+    </table>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}
